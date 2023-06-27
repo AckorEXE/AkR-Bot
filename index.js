@@ -30,7 +30,7 @@ client.on('message', async (msg) => {
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
             msg.react('🤖');
-            const sentMessage = await msg.reply(`┌─ [ 🤖𝕏𝕜ℝ-𝔹𝕠𝕥🤖 ]\n
+            const sentMessage = await msg.reply(`┌─ [ 🤖ΛKЯ-BӨƬ🤖 ]\n
 ├ ⭐ 𝘔𝘌𝘕𝘜 𝘋𝘌𝘓 𝘉𝘖𝘛:
 ├ 💎 !mp <texto>
 ├ 💎 !kick <usuario>
