@@ -69,5 +69,13 @@ sudo systemctl enable AkR-Bot.service
 - Si quieres ver el estado de el servicio utiliza
 `sudo systemctl status AkR-Bot.service`
 
+### `—◉ ✅ FAQ ✅`
+Para mantenerse actualizado hacer pull al repositorio utilizando
+```bash
+cd AkR/Bot
+git pull
+sudo systemctl restart AkR-Bot.service
+```
+
 ### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
 <a href="http://wa.me/528251002140" target="blank"><img src="https://img.shields.io/badge/ACKOR-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" /></a>
