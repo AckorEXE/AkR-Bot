@@ -1,9 +1,6 @@
 # `🤖AkR-Bot🤖`
 Bot enfocado solamente para la administración de grupos de Whatsapp para jugadores de Tibia.
 
-### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
-<a href="http://wa.me/528251002140" target="blank"><img src="https://img.shields.io/badge/ACKOR-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" /></a>
-
 ### `—◉ 🧿 COMANDOS 🧿`
 ![img](https://i.imgur.com/1acZqod.png)
 
@@ -65,3 +62,6 @@ sudo systemctl start AkR-Bot
 sudo systemctl status AkR-Bot
 sudo systemctl enable AkR-Bot
 ```
+
+### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
+<a href="http://wa.me/528251002140" target="blank"><img src="https://img.shields.io/badge/ACKOR-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" /></a>
