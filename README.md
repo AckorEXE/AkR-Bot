@@ -25,6 +25,10 @@ npm start
 - Después cerramos el script con Ctrl + C y nos dirigimos a la raíz principal de nuestro servidor utilizando múltiples veces el comando cd
 
 ### `—◉ ✔️ CREAR SERVICIO DE EJECUCIÓN AUTOMATICA ✔️`
+Creamos un archivo de servicio para tu bot utilizando el siguiente comando
+```bash
+sudo nano /etc/systemd/system/AkR-Bot.service
+```
 - Dentro del archivo de servicio colocamos el siguiente contenido
 ```bash
 [Unit]
@@ -59,9 +63,9 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 ### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl start AkR-Bot
-sudo systemctl status AkR-Bot
-sudo systemctl enable AkR-Bot
+sudo systemctl start AkR-Bot.service
+sudo systemctl status AkR-Bot.service
+sudo systemctl enable AkR-Bot.service
 ```
 
 ### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
