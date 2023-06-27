@@ -50,9 +50,9 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 ### `—◉ 🤔 NO CONOCES LA RUTA DEL ARCHIVO? 🤔`
 - Si no conoces la ruta puedes navegar hasta la carpeta del bot utilizando los comandos  
 `ls  // Sirve para ver todas las carpetas y contenido de la ruta actual`  
-`• cd  // Sirve para posicionarte dentro de una carpeta`  
+`cd  // Sirve para posicionarte dentro de una carpeta`  
 - Una vez dentro de la ruta utilizamos el siguiente comando para obtener la ruta en especifico  
-`• pwd`  
+`pwd`  
 - Teniendo el contenido del archivo modificado y pegado, guardamos y cerramos presinando Ctrl + O, seguido de Enter y luego Ctrl + X.  
 
 ### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
