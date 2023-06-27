@@ -42,6 +42,8 @@ Environment=NODE_ENV=production
 [Install]
 WantedBy=multi-user.target
 ```
+- Teniendo el contenido del archivo modificado y pegado, guardamos y cerramos presinando Ctrl + O, seguido de Enter y luego Ctrl + X.   
+
 VALORES A MODIFICAR DEPENDIENDO SEA EL CASO  
 `ExecStart=/usr/bin/node /ruta-a-tu-archivo-del-bot.js`  
 `WorkingDirectory=/ruta-a-la-carpeta-del-bot`  
@@ -53,7 +55,6 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 `cd  // Sirve para posicionarte dentro de una carpeta`  
 - Una vez dentro de la ruta utilizamos el siguiente comando para obtener la ruta en especifico  
 `pwd`  
-- Teniendo el contenido del archivo modificado y pegado, guardamos y cerramos presinando Ctrl + O, seguido de Enter y luego Ctrl + X.  
 
 ### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
 ```bash
