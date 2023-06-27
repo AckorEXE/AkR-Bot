@@ -11,28 +11,28 @@ Bot enfocado solamente para la administración de grupos de Whatsapp para jugado
 - CLONAR EL REPOSITORIO [Aqui](https://github.com/AckorEXE/AkR-Bot/fork)
 
 ### `—◉ 👾 ACTIVAR EN UBUNTU 20.04 👾`
-```bash
 ESCRIBE LOS SIGUIENTES COMANDOS UNO POR UNO:
 1.- Actualizando el servidor e installando NodeJS
-> sudo apt-get update && sudo apt-get upgrade
-> sudo apt install npm
+```bash
+sudo apt-get update && sudo apt-get upgrade
+sudo apt install npm
+```
 2.- Clonando el repositorio
-> git clone https://github.com/AckorEXE/AkR-Bot.git
+```bash
+git clone https://github.com/AckorEXE/AkR-Bot.git
+```
 3.- Dirigiendo a la carpeta e instalando las dependencias y librerías
-> cd AkR-Bot
-> npm install
-> npm start
-> pkg install imagemagick -y
-> pkg install yarn
-> git clone https://github.com/AckorEXE/XkR-Bot
-> cd XkR-Bot
+```bash
+cd AkR-Bot
+npm install
+npm start
+```
 4.- Una vez iniciado y generado nuestro código QR hacemos una conexión para tenerla lista
 5.- Después cerramos el script con Ctrl + C y nos dirigimos a la raíz principal de nuestro servidor utilizando múltiples veces el comando cd
-```
 
 ### `—◉ ✔️ CREAR SERVICIO DE EJECUCIÓN AUTOMATICA ✔️`
-```bash
 1.- Dentro del archivo de servicio colocamos el siguiente contenido
+```bash
 [Unit]
 Description=AkR-Bot
 After=network.target
@@ -54,7 +54,6 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 • User=usuario
 
 ### `—◉ 🤔 NO CONOCES LA RUTA DEL ARCHIVO? 🤔`
-
 1.- Si no conoces la ruta puedes navegar hasta la carpeta del bot utilizando los comandos
 • ls  // Sirve para ver todas las carpetas y contenido de la ruta actual
 • cd  // Sirve para posicionarte dentro de una carpeta
