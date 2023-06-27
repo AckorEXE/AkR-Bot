@@ -53,20 +53,21 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 `WorkingDirectory=/ruta-a-la-carpeta-del-bot`  
 `User=usuario`  
 
-### `—◉ 🤔 NO CONOCES LA RUTA DEL ARCHIVO? 🤔`
-- Si no conoces la ruta puedes navegar hasta la carpeta del bot utilizando los comandos  
-`ls  // Sirve para ver todas las carpetas y contenido de la ruta actual`  
-`cd  // Sirve para posicionarte dentro de una carpeta`  
-- Una vez dentro de la ruta utilizamos el siguiente comando para obtener la ruta en especifico  
-`pwd`  
-
 ### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl start AkR-Bot.service
-sudo systemctl status AkR-Bot.service
 sudo systemctl enable AkR-Bot.service
 ```
+
+### `—◉ 🤔 FAQ 🤔`
+- Si no conoces la ruta puedes navegar hasta la carpeta del bot utilizando los comandos  
+`ls  // Sirve para ver todas las carpetas y contenido de la ruta actual`  
+`cd  // Sirve para posicionarte dentro de una carpeta`  
+- Una vez dentro de la ruta utilizamos el siguiente comando para obtener la ruta en especifico  
+`pwd`
+- Si quieres ver el estado de el servicio utiliza
+`sudo systemctl status AkR-Bot.service`
 
 ### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
 <a href="http://wa.me/528251002140" target="blank"><img src="https://img.shields.io/badge/ACKOR-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" /></a>
