@@ -86,5 +86,22 @@ git pull
 sudo systemctl restart AkR-Bot.service
 ```
 
+Actualización de NodeJS
+```bash
+sudo npm install -g n
+sudo n lts
+```
+
+Refrescar hash Post-Actualización
+```bash
+hash -r
+rehash
+```
+
+Actualización de Puppeteer
+```bash
+npm install puppeteer@latest
+```
+
 ### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
 <a href="http://wa.me/528251002140" target="blank"><img src="https://img.shields.io/badge/ACKOR-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" /></a>
