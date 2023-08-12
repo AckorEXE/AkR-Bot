@@ -53,6 +53,13 @@ VALORES A MODIFICAR DEPENDIENDO SEA EL CASO
 `WorkingDirectory=/ruta-a-la-carpeta-del-bot`  
 `User=usuario`  
 
+### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start AkR-Bot.service
+sudo systemctl enable AkR-Bot.service
+```
+
 ### `—◉ ✔️ CREAR SERVICIO DE EJECUCIÓN AUTOMATICA UTLIZANDO PM2✔️`
 Nos dirigimos a la carpeta de nuestro Bot e instalamos PM2 y creamos el servicio
 ```bash
@@ -60,13 +67,6 @@ cd AkR-Bot
 sudo npm install -g pm2
 pm2 start npm --name "index.js" -- start
 pm2 save
-```
-
-### `—◉ ⚙️ RECARGA SYSTEMD PARA RECONOCER EL NUEVO ARCHIVO Y HABILITAR SU INICIO AUTOMÁTICO ⚙️`
-```bash
-sudo systemctl daemon-reload
-sudo systemctl start AkR-Bot.service
-sudo systemctl enable AkR-Bot.service
 ```
 
 ### `—◉ 🤔 FAQ 🤔`
