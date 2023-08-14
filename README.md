@@ -100,6 +100,8 @@ rehash
 
 Actualización de Puppeteer
 ```bash
+sudo apt-get install libgbm1
+sudo apt-get install libgbm2
 npm install puppeteer@latest
 ```
 
