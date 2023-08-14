@@ -67,6 +67,7 @@ cd AkR-Bot
 sudo npm install -g pm2
 pm2 start npm --name "index.js" -- start
 pm2 save
+pm2 save --force
 ```
 
 ### `—◉ 🤔 FAQ 🤔`
