@@ -92,10 +92,6 @@ Actualización de NodeJS
 ```bash
 sudo npm install -g n
 sudo n lts
-```
-
-Refrescar hash Post-Actualización
-```bash
 hash -r
 rehash
 ```
@@ -105,6 +101,11 @@ Actualización de Puppeteer
 sudo apt-get install libgbm1
 sudo apt-get install libgbm2
 npm install puppeteer@latest
+```
+
+Actualización de Whatsapp-Web.js
+```bash
+npm install whatsapp-web.js@next
 ```
 
 ### `—◉ 👑 DUDAS SOBRE EL BOT?, CONTACTAME 👑`
