@@ -17,10 +17,6 @@ client.on('ready', () => {
     console.log('🤖...Conexión exitosa!');
 });
 
-/* Crea una variable para asignar los minutos en el tiempo de espera de eliminar mensaje */
-const tiempoEspera = 20;
-
-
 /* MENU */
 client.on('message', async (msg) => {
     if (msg.body === '!menu') {
@@ -38,10 +34,6 @@ client.on('message', async (msg) => {
 ├ 💎 !item <nombre>
 └───────────`);
             await sentMessage.react('💛');
-            // Establece un temporizador para auto eliminar el mensaje...
-            setTimeout(async () => {
-                await sentMessage.delete(true); // Elimina el mensaje para todos
-            }, tiempoEspera * 1000 * 60);
         }
     }
 });
@@ -71,18 +63,10 @@ client.on('message', async (msg) => {
                 // Envia la lista de los contactos y el mensaje, añade una reacción al msg
                 const sentMessage = await chat.sendMessage(text, { mentions });
                 await sentMessage.react('❤️');
-
-                // Establece un temporizador para auto eliminar el mensaje...
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
                 await sentMessage.react('❎');
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
             }
         }
     }
@@ -106,19 +90,10 @@ client.on('message', async (msg) => {
                 // Envia el codigo del grupo
                 const sentMessage = await msg.reply(`El enlace de invitación al grupo es:\n https://chat.whatsapp.com/${codigoGrupo}`);
                 await sentMessage.react('✅');
-
-                // Establece un temporizador para auto eliminar el mensaje...
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
-
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
                 await sentMessage.react('❎');
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
             }
         }
     }
@@ -142,9 +117,6 @@ client.on('message', async (msg) => {
                     // No se mencionó a ningún participante para expulsar
                     const sentMessage = await msg.reply('Debes mencionar a un participante para expulsarlo.');
                     await sentMessage.react('🤔');
-                    setTimeout(async () => {
-                        await sentMessage.delete(true); // Elimina el mensaje para todos
-                    }, tiempoEspera * 1000 * 60);
                 } else {
                     // Expulsa a los participantes mencionados
                     for (const participantId of mentionedParticipants) {
@@ -152,17 +124,11 @@ client.on('message', async (msg) => {
                     }
                     const sentMessage = await msg.reply('Participantes expulsados exitosamente.');
                     await sentMessage.react('😂');
-                    setTimeout(async () => {
-                        await sentMessage.delete(true); // Elimina el mensaje para todos
-                    }, tiempoEspera * 1000 * 60);
                 }
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
                 await sentMessage.react('❎');
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
             }
         }
     }
@@ -189,29 +155,17 @@ client.on('message', async (msg) => {
                         await chat.addParticipants([phoneNumber]);
                         const sentMessage = await msg.reply('Participante añadido exitosamente.');
                         await sentMessage.react('✅');
-                        setTimeout(async () => {
-                            await sentMessage.delete(true); // Elimina el mensaje para todos
-                        }, tiempoEspera * 1000 * 60);
                     } catch (error) {
                         const sentMessage = await msg.reply('No se pudo añadir al participante. Asegúrate de que el número de teléfono sea válido.');
                         await sentMessage.react('❌');
-                        setTimeout(async () => {
-                            await sentMessage.delete(true); // Elimina el mensaje para todos
-                        }, tiempoEspera * 1000 * 60);
                     }
                 } else {
                     const sentMessage = await msg.reply('El formato del número de teléfono no es válido. Asegúrate de que tenga el formato adecuado, por ejemplo, "+1234567890".');
                     await sentMessage.react('❌');
-                    setTimeout(async () => {
-                        await sentMessage.delete(true); // Elimina el mensaje para todos
-                    }, tiempoEspera * 1000 * 60);
                 }
             } else {
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
                 await sentMessage.react('❎');
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
             }
         }
     }
@@ -253,23 +207,17 @@ client.on('message', async (msg) => {
                 if (info) {
                     const sentMessage = await msg.reply(`${info}\n🔎 ${url}`);
                     await sentMessage.react('📚');
-                    setTimeout(async () => {
-                        await sentMessage.delete(true); // Elimina el mensaje para todos
-                    }, tiempoEspera * 1000 * 60);
+                    // No incluir aquí la función de eliminación del mensaje
                 } else {
                     const sentMessage = await msg.reply('No se encontró información para ese item.');
                     await sentMessage.react('❌');
-                    setTimeout(async () => {
-                        await sentMessage.delete(true); // Elimina el mensaje para todos
-                    }, tiempoEspera * 1000 * 60);
+                    // No incluir aquí la función de eliminación del mensaje
                 }
             } catch (error) {
                 // Error al obtener la información del item
                 const sentMessage = await msg.reply('No se pudo obtener la información del item.');
                 await sentMessage.react('❌');
-                setTimeout(async () => {
-                    await sentMessage.delete(true); // Elimina el mensaje para todos
-                }, tiempoEspera * 1000 * 60);
+                // No incluir aquí la función de eliminación del mensaje
             }
         }
     }
