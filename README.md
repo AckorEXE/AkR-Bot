@@ -71,6 +71,22 @@ pm2 save --force
 sudo npm install -g pm2 && pm2 update
 ```
 
+### `—◉ ✔️ CREAR AUTO START EN WINDOWS✔️`
+Nos dirigimos a la carpeta de nuestro Bot, creamos un bloc de notas llamado auto.start.bat y dentro de el agregamos:
+```bash
+@echo off
+:loop
+tasklist /fi "imagename eq node.exe" | find /i "node.exe" > nul
+if errorlevel 1 (
+    cd C:\Users\ackorvps\Downloads\AkR-Bot-main
+    start npm start
+)
+timeout /t 10 /nobreak > nul
+goto loop
+```
+- Reemplazar cd C:\Users\ackorvps\Downloads\AkR-Bot-main por la ruta correcta de la carpeta
+
+
 ### `—◉ 🤔 FAQ 🤔`
 - Si no conoces la ruta puedes navegar hasta la carpeta del bot utilizando los comandos  
 `ls  // Sirve para ver todas las carpetas y contenido de la ruta actual`  
