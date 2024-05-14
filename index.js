@@ -73,7 +73,7 @@ client.on('message', async (msg) => {
 });
 
 
-/* LINK DEL GRUPO */
+/* LINK DEL GRUPO VIEJO
 client.on('message', async (msg) => {
     if (msg.body === '!link') {
         const chat = await msg.getChat();
@@ -98,6 +98,46 @@ client.on('message', async (msg) => {
         }
     }
 });
+*/
+
+/* LINK DEL GRUPO NUEVO */
+
+// Importa el cliente de WhatsApp
+const client = require('whatsapp-web.js');
+
+// Crea un nuevo cliente
+const whatsappClient = new client();
+
+// Escucha los mensajes entrantes
+whatsappClient.on('message', async (msg) => {
+    if (msg.body === '!link') {
+        const chat = await msg.getChat();
+        const contacto = await msg.getContact();
+
+        // Verifica si el chat es un grupo
+        if (chat.isGroup) {
+            msg.react('🤖');
+            // Verifica si el remitente es un administrador
+            const isAdmin = chat.participants.filter(participant => participant.id._serialized === contacto.id._serialized && participant.isAdmin).length > 0;
+            const isOwner = chat.participants.filter(participant => participant.id._serialized === contacto.id._serialized && participant.isSuperAdmin).length > 0;
+            if (isAdmin || isOwner) {
+                // Obtiene el codigo del grupo
+                const codigoGrupo = await chat.getInviteCode();
+                // Envia el codigo del grupo
+                const sentMessage = await msg.reply(`El enlace de invitación al grupo es:\n https://chat.whatsapp.com/${codigoGrupo}`);
+                await sentMessage.react('✅');
+            } else {
+                // El remitente no es un administrador
+                const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+                await sentMessage.react('❎');
+            }
+        }
+    }
+});
+
+// Inicia sesión en WhatsApp Web
+whatsappClient.initialize();
+
 
 
 /* KICK A UN PARTICIPANTE (expulsa persona de un grupo) */
