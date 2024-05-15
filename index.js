@@ -17,17 +17,15 @@ client.on('ready', () => {
     console.log('🤖...Conexión exitosa!');
 });
 
-/* MENU */
+/* COMMANDS */
 client.on('message', async (msg) => {
-    if (msg.body === '!menu') {
+    if (msg.body === '!commands' || msg.body === '!help' || msg.body === '!menu') {
         const chat = await msg.getChat();
-        const contacto = await msg.getContact();
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
             msg.react('🤖');
-            const sentMessage = await msg.reply(`┌─ [ 🤖ΛKЯ-BӨƬ🤖 ]\n
-├ ⭐ 𝘔𝘌𝘕𝘜 𝘋𝘌𝘓 𝘉𝘖𝘛:
+            const sentMessage = await msg.reply(`┌─ [ 🤖Commands🤖 ]
 ├ 💎 !mp <texto>
 ├ 💎 !kick <usuario>
 ├ 💎 !link
@@ -37,7 +35,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-
 
 /* MASSPOKE */
 client.on('message', async (msg) => {
@@ -73,7 +70,7 @@ client.on('message', async (msg) => {
 });
 
 
-/* LINK DEL GRUPO */
+/* LINK DEL GRUPO
 client.on('message', async (msg) => {
     if (msg.body === '!link') {
         const chat = await msg.getChat();
@@ -98,6 +95,7 @@ client.on('message', async (msg) => {
         }
     }
 });
+*/
 
 
 /* KICK A UN PARTICIPANTE (expulsa persona de un grupo) */
