@@ -78,11 +78,12 @@ Nos dirigimos a la carpeta de nuestro Bot, creamos un bloc de notas llamado auto
 :loop
 tasklist /fi "imagename eq node.exe" | find /i "node.exe" > nul
 if errorlevel 1 (
-    cd C:\Users\ackorvps\Downloads\AkR-Bot-main
-    start npm start
+    cd C:\Users\Administrator\Downloads\AkR-Bot-main
+    start cmd /k "npm start"
 )
-timeout /t 10 /nobreak > nul
-goto loop
+timeout /t 10 /nobreak > nul
+goto loop
+
 ```
 - Reemplazar cd C:\Users\ackorvps\Downloads\AkR-Bot-main por la ruta correcta de la carpeta
 
