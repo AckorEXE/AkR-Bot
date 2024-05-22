@@ -24,7 +24,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             const sentMessage = await msg.reply(`┌─ [ 🤖Commands🤖 ]
 ├ 💎 !mp <texto>
 ├ 💎 !kick <usuario>
@@ -32,14 +32,14 @@ client.on('message', async (msg) => {
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
 └───────────`);
+	    msg.react('🤖');
             await sentMessage.react('💛');
         }
     }
 });
 
 /* STICKERS CREATOR */
-
-const {  MessageMedia } = require('whatsapp-web.js');
+const { MessageMedia } = require('whatsapp-web.js');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
 const fs = require('fs');
@@ -48,57 +48,84 @@ const path = require('path');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 client.on('message', async (msg) => {
-    if (msg.body === '!sticker' && msg.hasMedia) {
+    if (msg.body === '!sticker' && (msg.hasMedia || msg.hasQuotedMsg)) {
         const chat = await msg.getChat();
 
         if (chat.isGroup) {
-            msg.react('🤖');
+            await msg.react('⏳');
 
             try {
-                const media = await msg.downloadMedia();
-                const fileName = `sticker_${Date.now()}`;
-                const tempDir = path.join(__dirname, 'temp');
-                if (!fs.existsSync(tempDir)) {
-                    fs.mkdirSync(tempDir);
+                let media;
+                if (msg.hasMedia) {
+                    media = await msg.downloadMedia();
+                } else if (msg.hasQuotedMsg) {
+                    const quotedMsg = await msg.getQuotedMessage();
+                    if (quotedMsg.hasMedia) {
+                        media = await quotedMsg.downloadMedia();
+                    }
                 }
-                const inputPath = path.join(tempDir, `${fileName}.${media.mimetype.split('/')[1]}`);
-                const outputPath = path.join(tempDir, `${fileName}.webp`);
 
-                fs.writeFileSync(inputPath, Buffer.from(media.data, 'base64'));
+                if (media) {
+                    const fileName = `sticker_${Date.now()}`;
+                    const tempDir = path.join(__dirname, 'temp');
+                    if (!fs.existsSync(tempDir)) {
+                        fs.mkdirSync(tempDir);
+                    }
+                    const inputPath = path.join(tempDir, `${fileName}_input.${media.mimetype.split('/')[1]}`);
+                    const outputPath = path.join(tempDir, `${fileName}_output.webp`);
 
-                const isVideo = media.mimetype.startsWith('video/');
+                    fs.writeFileSync(inputPath, Buffer.from(media.data, 'base64'));
 
-                ffmpeg(inputPath)
-                    .outputOptions([
-                        '-vcodec', 'libwebp',
-                        '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,fps=15',
-                        '-lossless', '0',
-                        '-compression_level', '6',
-                        '-q:v', '80',
-                        '-loop', '0',
-                        '-preset', 'default',
-                    ])
-                    .outputOptions(isVideo ? ['-an', '-t', '4'] : [])
-                    .toFormat('webp')
-                    .output(outputPath)
-.on('end', async () => {
+                    const isVideo = media.mimetype.startsWith('video/');
 
-    const stickerMedia = MessageMedia.fromFilePath(outputPath);
+                    ffmpeg(inputPath)
+                        .outputOptions([
+                            '-vcodec', 'libwebp',
+                            '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,fps=15',
+                            '-lossless', '0',
+                            '-compression_level', '6',
+                            '-q:v', '80',
+                            '-loop', '0',
+                            '-preset', 'default',
+                        ])
+                        .outputOptions(isVideo ? ['-an', '-t', '4'] : [])
+                        .toFormat('webp')
+                        .output(outputPath)
+                        .on('end', async () => {
+                            const stickerMedia = MessageMedia.fromFilePath(outputPath);
 
-    const sentMessage = await msg.reply(stickerMedia, null, { sendMediaAsSticker: true, stickerName: 'AkR-Bot', stickerAuthor: 'Ackor' });
-    fs.unlinkSync(inputPath);
-    fs.unlinkSync(outputPath);
-    await sentMessage.react('🖼️');
-})
-                    .run();
+                            const sentMessage = await msg.reply(stickerMedia, null, { sendMediaAsSticker: true, stickerName: 'AkR-Bot', stickerAuthor: 'Ackor' });
+                            fs.unlinkSync(inputPath);
+                            fs.unlinkSync(outputPath);
+                            await msg.react('🤖');
+                            await sentMessage.react('🖼️');
+                        })
+                        .on('error', async (error) => {
+                            console.error('Error processing sticker:', error);
+                            const errorMessage = await msg.reply('Error al procesar el sticker.');
+                            await msg.react('🤖');
+                            await errorMessage.react('❌');
+                            fs.unlinkSync(inputPath);
+                            if (fs.existsSync(outputPath)) {
+                                fs.unlinkSync(outputPath);
+                            }
+                        })
+                        .run();
+                } else {
+                    const errorMessage = await msg.reply('No hay ningún archivo para crear un sticker.');
+                    await msg.react('🤖');
+                    await errorMessage.react('❌');
+                }
             } catch (error) {
                 console.error('Error processing sticker:', error);
-                await msg.reply('Error processing the sticker.');
-			    await sentMessage.react('❌');
+                const errorMessage = await msg.reply('Error al procesar el sticker.');
+                await msg.react('🤖');
+                await errorMessage.react('❌');
             }
         }
     }
 });
+
 
 /* MASSPOKE */
 client.on('message', async (msg) => {
@@ -108,7 +135,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             // Verifica si el remitente es un administrador
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
@@ -123,10 +150,12 @@ client.on('message', async (msg) => {
                 }
                 // Envia la lista de los contactos y el mensaje, añade una reacción al msg
                 const sentMessage = await chat.sendMessage(text, { mentions });
+		msg.react('🤖');
                 await sentMessage.react('❤️');
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+		msg.react('🤖');
                 await sentMessage.react('❎');
             }
         }
@@ -142,7 +171,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             // Verifica si el remitente es un administrador
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
@@ -150,10 +179,12 @@ client.on('message', async (msg) => {
                 const codigoGrupo = await chat.getInviteCode();
                 // Envia el codigo del grupo
                 const sentMessage = await msg.reply(`El enlace de invitación al grupo es:\n https://chat.whatsapp.com/${codigoGrupo}`);
+		msg.react('🤖');
                 await sentMessage.react('✅');
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+		msg.react('🤖');
                 await sentMessage.react('❎');
             }
         }
@@ -170,7 +201,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             // Verifica si el remitente es un administrador
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
@@ -178,6 +209,7 @@ client.on('message', async (msg) => {
                 if (mentionedParticipants.length === 0) {
                     // No se mencionó a ningún participante para expulsar
                     const sentMessage = await msg.reply('Debes mencionar a un participante para expulsarlo.');
+		    msg.react('🤖');
                     await sentMessage.react('🤔');
                 } else {
                     // Expulsa a los participantes mencionados
@@ -185,11 +217,13 @@ client.on('message', async (msg) => {
                         await chat.removeParticipants([participantId]);
                     }
                     const sentMessage = await msg.reply('Participantes expulsados exitosamente.');
+                    msg.react('🤖');
                     await sentMessage.react('😂');
                 }
             } else {
                 // El remitente no es un administrador
                 const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+                msg.react('🤖');
                 await sentMessage.react('❎');
             }
         }
@@ -241,7 +275,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             const url = msg.body.split(' ')[1]; // Obtener la URL después de "!guild"
 
             try {
@@ -269,15 +303,18 @@ client.on('message', async (msg) => {
                 if (formattedNames) {
                     const sentMessage = await msg.reply(`${formattedNames}`);
                     await sentMessage.react('🔰');
+		    msg.react('🤖');
                     // No incluir aquí la función de eliminación del mensaje
                 } else {
                     const sentMessage = await msg.reply('No se encontraron nombres en la página.');
+		    msg.react('🤖');
                     await sentMessage.react('❌');
                     // No incluir aquí la función de eliminación del mensaje
                 }
             } catch (error) {
                 // Error al obtener la información de la página
                 const sentMessage = await msg.reply('No se pudo obtener la información de la página.');
+		msg.react('🤖');
                 await sentMessage.react('❌');
                 // No incluir aquí la función de eliminación del mensaje
             }
@@ -293,7 +330,7 @@ client.on('message', async msg => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             const monsterName = msg.body.split(' ').slice(1).join(' ');
             try {
                 const response = await axios.get(`https://api.tibiadata.com/v4/creature/${encodeURIComponent(monsterName)}`);
@@ -340,24 +377,22 @@ ${formattedDamageTaken}
 ${loot_list.join(', ')}
 
 More info: ${image_url}`);
-                    
+                    msg.react('🤖');
                     await SentMessage.react('🏹');
                     
                 } else {
                     const sentMessage = await msg.reply('No se encontró información para ese monster.');
+		    msg.react('🤖');
                     await sentMessage.react('❌');
                 }
             } catch (error) {
                 const sentMessage = await msg.reply('No se pudo obtener la información del monster.');
+		msg.react('🤖');
                 await sentMessage.react('❌');
             }
         }
     }
 });
-
-
-
-
 
 
 /* TIBIA ITEM */
@@ -370,7 +405,7 @@ client.on('message', async (msg) => {
 
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
-            msg.react('🤖');
+            msg.react('⏳');
             const item = msg.body.split(' ').slice(1).join('-'); // Obtener el nombre del item después de "!item"
             const url = `https://tiblioteca.com/item/${encodeURIComponent(item)}`;
 
@@ -394,16 +429,19 @@ client.on('message', async (msg) => {
 
                 if (info) {
                     const sentMessage = await msg.reply(`${info}\n🔎 ${url}`);
+		    msg.react('🤖');
                     await sentMessage.react('📚');
                     // No incluir aquí la función de eliminación del mensaje
                 } else {
                     const sentMessage = await msg.reply('No se encontró información para ese item.');
+		    msg.react('🤖');
                     await sentMessage.react('❌');
                     // No incluir aquí la función de eliminación del mensaje
                 }
             } catch (error) {
                 // Error al obtener la información del item
                 const sentMessage = await msg.reply('No se pudo obtener la información del item.');
+		msg.react('🤖');
                 await sentMessage.react('❌');
                 // No incluir aquí la función de eliminación del mensaje
             }
