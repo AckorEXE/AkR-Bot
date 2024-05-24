@@ -28,7 +28,7 @@ client.on('message', async (msg) => {
             const sentMessage = await msg.reply(`┌─ [ 🤖Commands🤖 ]
 ├ 💎 !mp <texto>
 ├ 💎 !kick <usuario>
-├ 💎 !sticker <video o imagen>
+├ 💎 !sticker, !s <multimedia>
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
 └───────────`);
@@ -48,7 +48,7 @@ const path = require('path');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 client.on('message', async (msg) => {
-    if (msg.body === '!sticker' && (msg.hasMedia || msg.hasQuotedMsg)) {
+    if ((msg.body === '!sticker' || msg.body === '!s')  && (msg.hasMedia || msg.hasQuotedMsg)) {
         const chat = await msg.getChat();
 
         if (chat.isGroup) {
@@ -193,7 +193,6 @@ client.on('message', async (msg) => {
 */
 
 
-/* KICK A UN PARTICIPANTE (expulsa persona de un grupo) */
 client.on('message', async (msg) => {
     if (msg.body.startsWith('!kick')) {
         const chat = await msg.getChat();
@@ -202,6 +201,17 @@ client.on('message', async (msg) => {
         // Verifica si el chat es un grupo
         if (chat.isGroup) {
             msg.react('⏳');
+
+            // Verifica si el bot es un administrador
+            const botId = client.info.wid._serialized;
+            const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
+            if (!botParticipant || !botParticipant.isAdmin) {
+                const sentMessage = await msg.reply('No tengo permisos de administrador para expulsar participantes.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+                return;
+            }
+
             // Verifica si el remitente es un administrador
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
@@ -209,12 +219,16 @@ client.on('message', async (msg) => {
                 if (mentionedParticipants.length === 0) {
                     // No se mencionó a ningún participante para expulsar
                     const sentMessage = await msg.reply('Debes mencionar a un participante para expulsarlo.');
-		    msg.react('🤖');
+                    msg.react('🤖');
                     await sentMessage.react('🤔');
                 } else {
                     // Expulsa a los participantes mencionados
                     for (const participantId of mentionedParticipants) {
-                        await chat.removeParticipants([participantId]);
+                        try {
+                            await chat.removeParticipants([participantId]);
+                        } catch (error) {
+                            await msg.reply(`Error al expulsar a ${participantId}: ${error.message}`);
+                        }
                     }
                     const sentMessage = await msg.reply('Participantes expulsados exitosamente.');
                     msg.react('🤖');
