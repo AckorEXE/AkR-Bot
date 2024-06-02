@@ -1,4 +1,4 @@
-﻿const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
@@ -31,9 +31,14 @@ client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
-// Log successful connection
+/* Muestra un mensaje si la conexion fue exitosa */
 client.on('ready', () => {
-    console.log('🤖...Conexión exitosa!');
+    console.log(` █████╗ ██╗  ██╗██████╗       ██████╗  ██████╗ ████████╗
+██╔══██╗██║ ██╔╝██╔══██╗      ██╔══██╗██╔═══██╗╚══██╔══╝
+███████║█████╔╝ ██████╔╝█████╗██████╔╝██║   ██║   ██║   
+██╔══██║██╔═██╗ ██╔══██╗╚════╝██╔══██╗██║   ██║   ██║   
+██║  ██║██║  ██╗██║  ██║      ██████╔╝╚██████╔╝   ██║   
+╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝      ╚═════╝  ╚═════╝    ╚═╝   \nConexión exitosa!\n`);
 });
 
 /* COMMANDS */
@@ -262,6 +267,10 @@ client.on('message', async (msg) => {
 });
 
 /* GET ITEM */
+// Función para convertir el nombre del item al formato correcto
+function formatItemName(item) {
+    return item.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('_');
+}
 client.on('message', async (msg) => {
     if (msg.body.startsWith('!item')) {
         const chat = await msg.getChat();
@@ -278,48 +287,75 @@ client.on('message', async (msg) => {
                 return;
             }
             msg.react('⏳');
-            const item = msg.body.split(' ').slice(1).join('-'); // Obtener el nombre del item después de "!item"
-            const url = `https://tiblioteca.com/item/${encodeURIComponent(item)}`;
+            const item = msg.body.split(' ').slice(1).join('_'); // Obtener el nombre del item después de "!item"
+            const formattedItem = formatItemName(item); // Formatear el nombre del item
+            const url = `https://tibia.fandom.com/wiki/${encodeURIComponent(formattedItem)}`;
+
+            console.log(`Fetching URL: ${url}`);  // Debugging URL
 
             try {
                 const response = await axios.get(url);
                 const $ = cheerio.load(response.data);
 
-                // Obtener la información de los elementos con la clase "col text-start bg-texto-verde"
-                const verdeInfo = $('.col.text-start.bg-texto-verde').text().trim();
+                // Extraer la información del item
+                const lookText = $('.item-look.tibiatext.tibiagreen').text().trim();
+                let droppedByText = $('.item-droppedby-wrapper').text().trim();
 
-                // Obtener el texto del primer elemento "li" dentro de la clase "list-group"
-                const listDropped = $('.list-group li').first().clone().children('strong').remove().end().text().trim();
+                // Formatear droppedByText en una sola línea
+                if (droppedByText) {
+                    droppedByText = droppedByText.replace(/\n/g, ', ').replace(/,\s*$/, '');
+                }
+
+                // Procesar el lookText para agregar espacios después de los puntos
+                const formattedLookText = lookText.replace(/\.\s+/g, '. ');
+
+                let formattedTradesText = '';
+
+                // Buscar el div con la clase "trades" y el id "npc-trade-sellto"
+                const sellToDiv = $('#npc-trade-sellto');
+
+                // Iterar sobre los elementos hijos para obtener la información
+                sellToDiv.find('tr').each((index, element) => {
+                    const tds = $(element).find('td');
+                    const npc = tds.eq(0).text().trim();
+                    const location = tds.eq(1).text().trim();
+                    const price = tds.eq(2).text().trim().replace(/\s*\u20AC$/, ' Gold'); // Reemplazar el símbolo de moneda con "Gold"
+                    if (npc && location && price) {
+                        formattedTradesText += `👨🏻${npc} | 📍${location} | 💰${price}\n`;
+                    }
+                });
 
                 let info = '';
-                if (verdeInfo) {
-                    info += verdeInfo + '\n\n';
+                if (formattedLookText) {
+                    info += `*ℹ${formattedLookText}*\n\n`;
                 }
-                if (listDropped) {
-                    info += `*Dropped by:* ${listDropped}`;
+                if (formattedTradesText) {
+                    info += `💹*Vender a:*\n${formattedTradesText}\n`;
+                }
+                if (droppedByText) {
+                    info += `🎁*Looteado por*: ${droppedByText}`;
                 }
 
                 if (info) {
                     const sentMessage = await msg.reply(`${info}\n🔎 ${url}`);
-		    msg.react('🤖');
+                    msg.react('🤖');
                     await sentMessage.react('📚');
-                    // No incluir aquí la función de eliminación del mensaje
                 } else {
                     const sentMessage = await msg.reply('No se encontró información para ese item.');
-		    msg.react('🤖');
+                    msg.react('🤖');
                     await sentMessage.react('❌');
-                    // No incluir aquí la función de eliminación del mensaje
                 }
             } catch (error) {
-                // Error al obtener la información del item
+                console.error('Error fetching item info:', error.message);  // Debugging Error
                 const sentMessage = await msg.reply('No se pudo obtener la información del item.');
-		msg.react('🤖');
+                msg.react('🤖');
                 await sentMessage.react('❌');
-                // No incluir aquí la función de eliminación del mensaje
             }
         }
     }
-});     
+});
+
+ 
 
 /* TIBIA MONSTERS */
 client.on('message', async msg => {
@@ -380,9 +416,7 @@ client.on('message', async msg => {
 ${formattedDamageTaken}
 
 🎁*Loot:*
-${loot_list.join(', ')}
-
-More info: ${image_url}`);
+${loot_list.join(', ')}`);
                     msg.react('🤖');
                     await SentMessage.react('🏹');
                     
