@@ -62,10 +62,10 @@ client.on('message', async (msg) => {
 ├ 💎 !mp <texto>
 ├ 💎 !link
 ├ 💎 !kick <usuario>
-│
+ │
 *🔸 Comandos multimedia:*
 ├ 💎 !sticker, !s <multimedia>
-│
+ │
 *🔸 Comandos para Tibia:*
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
