@@ -58,14 +58,53 @@ client.on('message', async (msg) => {
             }
             msg.react('⏳');
             const sentMessage = await msg.reply(`┌─ [ 🤖Commands🤖 ]
+*🔸 Comandos para grupos:*
 ├ 💎 !mp <texto>
+├ 💎 !link
 ├ 💎 !kick <usuario>
+│
+*🔸 Comandos multimedia:*
 ├ 💎 !sticker, !s <multimedia>
+│
+*🔸 Comandos para Tibia:*
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
 └───────────`);
             msg.react('🤖');
             await sentMessage.react('💛');
+        }
+    }
+});
+
+/* LINK */
+client.on('message', async (msg) => {
+    if (msg.body === '!link') {
+        const chat = await msg.getChat();
+	const contacto = await msg.getContact();
+        const userId = msg.author || msg.from;
+
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'link');
+
+        if (chat.isGroup) {
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+            msg.react('⏳');
+            const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
+            if (isAdmin || isOwner) {
+                const inviteCode = await chat.getInviteCode();
+                const inviteLink = `Abre este enlace para unirte a mi grupo de WhatsApp: https://chat.whatsapp.com/${inviteCode}`;
+                const sentMessage = await msg.reply(inviteLink);
+                msg.react('🔗');
+                await sentMessage.react('💙');
+            } else {
+                const sentMessage = await msg.reply('Este comando solo puede ser utilizado por administradores del grupo.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+            }
         }
     }
 });
@@ -266,11 +305,12 @@ client.on('message', async (msg) => {
     }
 });
 
-/* GET ITEM */
 // Función para convertir el nombre del item al formato correcto
 function formatItemName(item) {
     return item.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('_');
 }
+
+/* GET ITEM */
 client.on('message', async (msg) => {
     if (msg.body.startsWith('!item')) {
         const chat = await msg.getChat();
