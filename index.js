@@ -305,12 +305,19 @@ client.on('message', async (msg) => {
     }
 });
 
-// Función para convertir el nombre del item al formato correcto
-function formatItemName(item) {
-    return item.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('_');
-}
 
 /* GET ITEM */
+
+// Función para convertir el nombre del item al formato correcto
+function formatItemName(item) {
+    return item.split('_').map(word => {
+        if (word.length === 2) {
+            return word.toLowerCase();
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
+}
+
 client.on('message', async (msg) => {
     if (msg.body.startsWith('!item')) {
         const chat = await msg.getChat();
@@ -329,7 +336,7 @@ client.on('message', async (msg) => {
             msg.react('⏳');
             const item = msg.body.split(' ').slice(1).join('_'); // Obtener el nombre del item después de "!item"
             const formattedItem = formatItemName(item); // Formatear el nombre del item
-            const url = `https://tibia.fandom.com/wiki/${encodeURIComponent(formattedItem)}`;
+            const url = `https://tibia.fandom.com/wiki/${encodeURIComponent(formattedItem.replace(/ /g, '_'))}`;
 
             console.log(`Fetching URL: ${url}`);  // Debugging URL
 
@@ -387,15 +394,20 @@ client.on('message', async (msg) => {
                 }
             } catch (error) {
                 console.error('Error fetching item info:', error.message);  // Debugging Error
-                const sentMessage = await msg.reply('No se pudo obtener la información del item.');
-                msg.react('🤖');
-                await sentMessage.react('❌');
+                if (error.response && error.response.status === 404) {
+                    const sentMessage = await msg.reply('No se encontró el ítem en la wiki de Tibia.');
+                    msg.react('🤖');
+                    await sentMessage.react('❌');
+                } else {
+                    const sentMessage = await msg.reply('No se pudo obtener la información del ítem.');
+                    msg.react('🤖');
+                    await sentMessage.react('❌');
+                }
             }
         }
     }
 });
 
- 
 
 /* TIBIA MONSTERS */
 client.on('message', async msg => {
