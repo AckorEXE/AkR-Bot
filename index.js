@@ -305,12 +305,15 @@ client.on('message', async (msg) => {
     }
 });
 
-
 /* GET ITEM */
 
 // Función para convertir el nombre del item al formato correcto
 function formatItemName(item) {
+    const lowercaseWords = ["of", "the"];
     return item.split('_').map(word => {
+        if (lowercaseWords.includes(word.toLowerCase())) {
+            return word.toLowerCase();
+        }
         if (word.length === 2) {
             return word.toLowerCase();
         }
@@ -335,8 +338,8 @@ client.on('message', async (msg) => {
             }
             msg.react('⏳');
             const item = msg.body.split(' ').slice(1).join('_'); // Obtener el nombre del item después de "!item"
-            const formattedItem = formatItemName(item); // Formatear el nombre del item
-            const url = `https://tibia.fandom.com/wiki/${encodeURIComponent(formattedItem.replace(/ /g, '_'))}`;
+            const formattedItem = formatItemName(item).replace(/\s+/g, '_'); // Formatear el nombre del item y eliminar espacios adicionales
+            const url = `https://tibia.fandom.com/wiki/${encodeURIComponent(formattedItem)}`;
 
             console.log(`Fetching URL: ${url}`);  // Debugging URL
 
@@ -407,6 +410,7 @@ client.on('message', async (msg) => {
         }
     }
 });
+
 
 
 /* TIBIA MONSTERS */
