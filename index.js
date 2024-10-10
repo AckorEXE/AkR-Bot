@@ -17,8 +17,8 @@ function checkCommandDelay(userId, command) {
     }
     if (commandTimestamps[userId][command]) {
         const elapsedTime = currentTime - commandTimestamps[userId][command];
-        if (elapsedTime < 5000) {
-            const remainingTime = ((5000 - elapsedTime) / 1000).toFixed(1);
+        if (elapsedTime < 10000) {
+            const remainingTime = ((10000 - elapsedTime) / 1000).toFixed(1);
             return { allowed: false, remainingTime };
         }
     }
@@ -62,16 +62,41 @@ client.on('message', async (msg) => {
 ├ 💎 !mp <texto>
 ├ 💎 !link
 ├ 💎 !kick <usuario>
- │
+│
 *🔸 Comandos multimedia:*
 ├ 💎 !sticker, !s <multimedia>
- │
+│
 *🔸 Comandos para Tibia:*
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
+├ 💎 !elfbot
 └───────────`);
             msg.react('🤖');
             await sentMessage.react('💛');
+        }
+    }
+});
+
+/* ELFBOT*/
+client.on('message', async (msg) => {
+    if (msg.body === '!elfbot') {
+        const chat = await msg.getChat();
+        const userId = msg.author || msg.from;
+
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'elfbot');
+
+        if (chat.isGroup) {
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+            msg.react('⏳');
+            const sentMessage = await msg.reply(`🐸*Ingrese a este link para descargar el Elfbot (No necesita crackearse).*
+https://www.mediafire.com/file/iahkvgwwnopmcxk/ElfBot_NG_4.5.9.rar/file`);
+            msg.react('🤖');
+            await sentMessage.react('💚');
         }
     }
 });
@@ -206,7 +231,7 @@ client.on('message', async (msg) => {
     }
 });
 
-/* MASSPOKE */
+/* MASSPOKE OLD
 client.on('message', async (msg) => {
     if (msg.body.startsWith('!mp')) {
         const chat = await msg.getChat();
@@ -243,6 +268,52 @@ client.on('message', async (msg) => {
         }
     }
 });
+*/
+
+/* MASSPOKE */
+client.on('message', async (msg) => {
+    if (msg.body.startsWith('!mp')) {
+        const chat = await msg.getChat();
+        const contacto = await msg.getContact();
+        const userId = msg.author || msg.from;
+
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
+
+        if (chat.isGroup) {
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+            msg.react('⏳');
+            const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
+            if (isAdmin || isOwner) {
+                let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`; // Solo el texto visible
+                let mentions = [];
+                
+                // Agregar todos los participantes a las menciones
+                for (let participant of chat.participants) {
+                    const contact = await client.getContactById(participant.id._serialized);
+                    mentions.push(contact); // Agregar el contacto a las menciones
+                }
+                
+                // Enviar el mensaje con menciones pero sin mostrarlas en el texto
+                const sentMessage = await chat.sendMessage(text, { mentions });
+                
+                // Reacciones
+                msg.react('🤖');
+                await sentMessage.react('❤️');
+            } else {
+                const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+            }
+        }
+    }
+});
+
+
 
 // KICK A UN INTEGRANTE DEL GRUPO //
 client.on('message', async (msg) => {
