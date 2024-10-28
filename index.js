@@ -3,10 +3,14 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const client = new Client({
-    authStrategy: new LocalAuth()
-});
+const puppeteer = require('puppeteer-core');
 
+// Configura el cliente de WhatsApp con Puppeteer y las opciones necesarias
+const client = new Client({
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    },
+});
 const commandTimestamps = {};
 
 // Function to check and update command delay
