@@ -272,7 +272,8 @@ client.on('message', async (msg) => {
 
 /* MASSPOKE */
 client.on('message', async (msg) => {
-    if (msg.body.startsWith('!mp')) {
+    // Verifica si el mensaje empieza con "!mp" o si se está respondiendo a un mensaje
+    if (msg.body.startsWith('!mp') || msg.hasQuotedMsg && msg.body.startsWith('!mp')) {
         const chat = await msg.getChat();
         const contacto = await msg.getContact();
         const userId = msg.author || msg.from;
@@ -289,7 +290,17 @@ client.on('message', async (msg) => {
             msg.react('⏳');
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
-                let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`; // Solo el texto visible
+                let text;
+
+                // Si el mensaje tiene un mensaje citado, obtén el texto del mensaje citado
+                if (msg.hasQuotedMsg) {
+                    const quotedMsg = await msg.getQuotedMessage();
+                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${quotedMsg.body}`;
+                } else {
+                    // En caso de que no sea un mensaje citado, usa el texto después de "!mp"
+                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`;
+                }
+
                 let mentions = [];
                 
                 // Agregar todos los participantes a las menciones
@@ -298,7 +309,7 @@ client.on('message', async (msg) => {
                     mentions.push(contact); // Agregar el contacto a las menciones
                 }
                 
-                // Enviar el mensaje con menciones pero sin mostrarlas en el texto
+                // Enviar el mensaje con el texto copiado y menciones
                 const sentMessage = await chat.sendMessage(text, { mentions });
                 
                 // Reacciones
@@ -312,7 +323,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-
 
 
 // KICK A UN INTEGRANTE DEL GRUPO //
