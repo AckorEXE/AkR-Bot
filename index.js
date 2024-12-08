@@ -93,7 +93,7 @@ client.on('message', async (msg) => {
                 return;
             }
             msg.react('⏳');
-            const sentMessage = await msg.reply(`🐸*Ingrese a este link para descargar el Elfbot (No necesita crackearse).*
+            const sentMessage = await msg.reply(`*Ingrese a este link para descargar el Elfbot (No necesita crackearse).*
 https://www.mediafire.com/file/iahkvgwwnopmcxk/ElfBot_NG_4.5.9.rar/file`);
             msg.react('🤖');
             await sentMessage.react('💚');
@@ -231,9 +231,9 @@ client.on('message', async (msg) => {
     }
 });
 
-/* MASSPOKE OLD
+/* MASSPOKE OLD */
 client.on('message', async (msg) => {
-    if (msg.body.startsWith('!mp')) {
+    if (msg.body.startsWith('!mp') || (msg.hasQuotedMsg && msg.body.startsWith('!mp'))) {
         const chat = await msg.getChat();
         const contacto = await msg.getContact();
         const userId = msg.author || msg.from;
@@ -247,71 +247,38 @@ client.on('message', async (msg) => {
                 msg.react('⏱');
                 return;
             }
+
             msg.react('⏳');
-            const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
+
+            const participant = chat.participants.find(p => p.id._serialized === contacto.id._serialized);
+            const isAdmin = participant?.isAdmin || false;
+            const isOwner = participant?.isSuperAdmin || false;
+
             if (isAdmin || isOwner) {
-                let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}\n\n🧙🏻‍♂ 𝘗𝘓𝘈𝘠𝘌𝘙𝘚:`;
+                let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 `;
+
+                // Copiar el mensaje citado o usar el texto después de !mp
+                if (msg.hasQuotedMsg) {
+                    const quotedMsg = await msg.getQuotedMessage();
+                    text += `${quotedMsg.body}\n\n`;
+                } else {
+                    text += `${msg.body.slice(4).trim()}\n\n`;
+                }
+
+                text += `🧙🏻‍♂ 𝘗𝘓𝘈𝘠𝘌𝘙𝘚:`;
+
                 let mentions = [];
+
+                // Agregar los participantes al mensaje con formato y menciones
                 for (let participant of chat.participants) {
                     const contact = await client.getContactById(participant.id._serialized);
                     mentions.push(contact);
                     text += `\n┣➥ @${participant.id.user}`;
                 }
+
+                // Enviar el mensaje con menciones
                 const sentMessage = await chat.sendMessage(text, { mentions });
-                msg.react('🤖');
-                await sentMessage.react('❤️');
-            } else {
-                const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
-                msg.react('🤖');
-                await sentMessage.react('❎');
-            }
-        }
-    }
-});
-*/
 
-/* MASSPOKE */
-client.on('message', async (msg) => {
-    // Verifica si el mensaje empieza con "!mp" o si se está respondiendo a un mensaje
-    if (msg.body.startsWith('!mp') || msg.hasQuotedMsg && msg.body.startsWith('!mp')) {
-        const chat = await msg.getChat();
-        const contacto = await msg.getContact();
-        const userId = msg.author || msg.from;
-
-        const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
-
-        if (chat.isGroup) {
-            if (!allowed) {
-                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
-                await sentMessage.react('⏱');
-                msg.react('⏱');
-                return;
-            }
-            msg.react('⏳');
-            const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
-            if (isAdmin || isOwner) {
-                let text;
-
-                // Si el mensaje tiene un mensaje citado, obtén el texto del mensaje citado
-                if (msg.hasQuotedMsg) {
-                    const quotedMsg = await msg.getQuotedMessage();
-                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${quotedMsg.body}`;
-                } else {
-                    // En caso de que no sea un mensaje citado, usa el texto después de "!mp"
-                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`;
-                }
-
-                let mentions = [];
-                
-                // Agregar todos los participantes a las menciones
-                for (let participant of chat.participants) {
-                    const contact = await client.getContactById(participant.id._serialized);
-                    mentions.push(contact); // Agregar el contacto a las menciones
-                }
-                
-                // Enviar el mensaje con el texto copiado y menciones
-                const sentMessage = await chat.sendMessage(text, { mentions });
-                
                 // Reacciones
                 msg.react('🤖');
                 await sentMessage.react('❤️');
@@ -324,6 +291,50 @@ client.on('message', async (msg) => {
     }
 });
 
+
+/* MASSPOKE 
+client.on('message', async (msg) => {
+    if (msg.body.startsWith('!mp') || (msg.hasQuotedMsg && msg.body.startsWith('!mp'))) {
+        const chat = await msg.getChat();
+        if (chat.isGroup) {
+            const contacto = await msg.getContact();
+            const userId = msg.author || msg.from;
+            const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+            msg.react('⏳');
+            const participant = chat.participants.find(p => p.id._serialized === contacto.id._serialized);
+            const isAdmin = participant?.isAdmin || false;
+            const isOwner = participant?.isSuperAdmin || false;
+            if (isAdmin || isOwner) {
+                let text;
+                if (msg.hasQuotedMsg) {
+                    const quotedMsg = await msg.getQuotedMessage();
+                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${quotedMsg.body}`;
+                } else {
+                    text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`;
+                }
+                const mentions = chat.participants.map(participant => {
+                    return client.getContactById(participant.id._serialized);
+                });
+                // Esperar a obtener todos los contactos mencionados
+                const resolvedMentions = await Promise.all(mentions);
+                const sentMessage = await chat.sendMessage(text, { mentions: resolvedMentions });
+                msg.react('🤖');
+                await sentMessage.react('❤️');
+            } else {
+                const sentMessage = await msg.reply('Este comando solo puede ser utilizado por admins del grupo.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+            }
+        }
+    }
+});
+*/
 
 // KICK A UN INTEGRANTE DEL GRUPO //
 client.on('message', async (msg) => {
