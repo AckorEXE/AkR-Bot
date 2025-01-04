@@ -69,6 +69,7 @@ client.on('message', async (msg) => {
 *🔸 Comandos para Tibia:*
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
+├ 💎 !shared <level>
 ├ 💎 !elfbot
 └───────────`);
             msg.react('🤖');
@@ -77,7 +78,7 @@ client.on('message', async (msg) => {
     }
 });
 
-/* ELFBOT*/
+/* ELFBOT */
 client.on('message', async (msg) => {
     if (msg.body === '!elfbot') {
         const chat = await msg.getChat();
@@ -133,6 +134,45 @@ client.on('message', async (msg) => {
         }
     }
 });
+
+/* SHARED CALCULATOR */
+client.on('message', async (msg) => {
+    if (msg.body.startsWith('!shared')) {
+        const chat = await msg.getChat();
+        const userId = msg.author || msg.from;
+
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'shared');
+
+        if (chat.isGroup) {
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+
+            // Obtener el número después del comando
+            const args = msg.body.split(' ');
+            if (args.length !== 2 || isNaN(args[1])) {
+                const sentMessage = await msg.reply(`Debes proporcionar un número válido después de "!shared".
+*Ejemplo: "!shared 45"*`);
+                await sentMessage.react('❌');
+		msg.react('🧠');
+                return;
+            }
+
+            const number = parseInt(args[1], 10);
+            const resultDivision = Math.ceil(number / 1.5);
+            const resultMultiplication = Math.ceil(number * 1.5);
+
+            msg.react('⏳');
+            const sentMessage = await msg.reply(`Un personaje con nivel *${number}* puede compartir experiencia con los niveles *${resultDivision}* a *${resultMultiplication}*.`);
+            await sentMessage.react('🫶🏻');
+            msg.react('🧠');
+        }
+    }
+});
+
 
 /* STICKERS CREATOR */
 const { MessageMedia } = require('whatsapp-web.js');
@@ -290,7 +330,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-
 
 /* MASSPOKE 
 client.on('message', async (msg) => {
