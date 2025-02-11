@@ -106,7 +106,7 @@ https://www.mediafire.com/file/iahkvgwwnopmcxk/ElfBot_NG_4.5.9.rar/file`);
 client.on('message', async (msg) => {
     if (msg.body === '!link') {
         const chat = await msg.getChat();
-	const contacto = await msg.getContact();
+        const contacto = await msg.getContact();
         const userId = msg.author || msg.from;
 
         const { allowed, remainingTime } = checkCommandDelay(userId, 'link');
@@ -119,6 +119,17 @@ client.on('message', async (msg) => {
                 return;
             }
             msg.react('⏳');
+
+            // Verificar si el bot es administrador
+            const botId = client.info.wid._serialized;
+            const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
+            if (!botParticipant || (!botParticipant.isAdmin && !botParticipant.isSuperAdmin)) {
+                const sentMessage = await msg.reply('No tengo permisos de administrador para generar enlaces.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+                return;
+            }
+
             const { isAdmin, isSuperAdmin: isOwner } = chat.participants.find(participant => participant.id._serialized == contacto.id._serialized);
             if (isAdmin || isOwner) {
                 const inviteCode = await chat.getInviteCode();
@@ -290,6 +301,16 @@ client.on('message', async (msg) => {
 
             msg.react('⏳');
 
+            // Verificar si el bot es administrador
+            const botId = client.info.wid._serialized;
+            const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
+            if (!botParticipant || (!botParticipant.isAdmin && !botParticipant.isSuperAdmin)) {
+                const sentMessage = await msg.reply('No tengo permisos de administrador para enviar masspoke.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+                return;
+            }
+
             const participant = chat.participants.find(p => p.id._serialized === contacto.id._serialized);
             const isAdmin = participant?.isAdmin || false;
             const isOwner = participant?.isSuperAdmin || false;
@@ -297,7 +318,7 @@ client.on('message', async (msg) => {
             if (isAdmin || isOwner) {
                 let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 `;
 
-                // Copiar el mensaje citado o usar el texto después de !mp
+		// Copiar el mensaje citado o usar el texto después de !mp
                 if (msg.hasQuotedMsg) {
                     const quotedMsg = await msg.getQuotedMessage();
                     text += `${quotedMsg.body}\n\n`;
@@ -313,7 +334,7 @@ client.on('message', async (msg) => {
                 for (let participant of chat.participants) {
                     const contact = await client.getContactById(participant.id._serialized);
                     mentions.push(contact);
-                    text += `\n┣➥ @${participant.id.user}`;
+                    text += `\n🔹 @${participant.id.user}`;
                 }
 
                 // Enviar el mensaje con menciones
@@ -331,25 +352,38 @@ client.on('message', async (msg) => {
     }
 });
 
-/* MASSPOKE 
+/* MASSPOKE */
 client.on('message', async (msg) => {
-    if (msg.body.startsWith('!mp') || (msg.hasQuotedMsg && msg.body.startsWith('!mp'))) {
+    if (msg.body.startsWith('!hmp') || (msg.hasQuotedMsg && msg.body.startsWith('!hmp'))) {
         const chat = await msg.getChat();
         if (chat.isGroup) {
             const contacto = await msg.getContact();
             const userId = msg.author || msg.from;
-            const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
+            const { allowed, remainingTime } = checkCommandDelay(userId, 'hmp');
             if (!allowed) {
                 const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
                 await sentMessage.react('⏱');
                 msg.react('⏱');
                 return;
             }
+
             msg.react('⏳');
+
+            // Verificar si el bot es administrador
+            const botId = client.info.wid._serialized;
+            const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
+            if (!botParticipant || (!botParticipant.isAdmin && !botParticipant.isSuperAdmin)) {
+                const sentMessage = await msg.reply('No tengo permisos de administrador para enviar masspoke.');
+                msg.react('🤖');
+                await sentMessage.react('❎');
+                return;
+            }
+
             const participant = chat.participants.find(p => p.id._serialized === contacto.id._serialized);
             const isAdmin = participant?.isAdmin || false;
             const isOwner = participant?.isSuperAdmin || false;
             if (isAdmin || isOwner) {
+                // Mensaje principal
                 let text;
                 if (msg.hasQuotedMsg) {
                     const quotedMsg = await msg.getQuotedMessage();
@@ -357,11 +391,16 @@ client.on('message', async (msg) => {
                 } else {
                     text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 ${msg.body.slice(4).trim()}`;
                 }
+
+                // Obtener todos los contactos para las menciones
                 const mentions = chat.participants.map(participant => {
                     return client.getContactById(participant.id._serialized);
                 });
-                // Esperar a obtener todos los contactos mencionados
+
+                // Esperar a obtener todas las menciones
                 const resolvedMentions = await Promise.all(mentions);
+
+                // Enviar mensaje con menciones ocultas
                 const sentMessage = await chat.sendMessage(text, { mentions: resolvedMentions });
                 msg.react('🤖');
                 await sentMessage.react('❤️');
@@ -373,7 +412,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-*/
 
 // KICK A UN INTEGRANTE DEL GRUPO //
 client.on('message', async (msg) => {
@@ -382,22 +420,21 @@ client.on('message', async (msg) => {
         const contacto = await msg.getContact();
         const userId = msg.author || msg.from;
 
-        const { allowed, remainingTime } = checkCommandDelay(userId, 'kick');
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'kick');
 
-        // Verifica si el chat es un grupo
         if (chat.isGroup) {
             if (!allowed) {
                 const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
                 await sentMessage.react('⏱');
                 msg.react('⏱');
                 return;
-            }
+            }
             msg.react('⏳');
 
-            // Verifica si el bot es un administrador
+            // Verificar si el bot es administrador
             const botId = client.info.wid._serialized;
             const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
-            if (!botParticipant || !botParticipant.isAdmin) {
+            if (!botParticipant || (!botParticipant.isAdmin && !botParticipant.isSuperAdmin)) {
                 const sentMessage = await msg.reply('No tengo permisos de administrador para expulsar participantes.');
                 msg.react('🤖');
                 await sentMessage.react('❎');
@@ -437,7 +474,6 @@ client.on('message', async (msg) => {
 });
 
 /* GET ITEM */
-
 // Función para convertir el nombre del item al formato correcto
 function formatItemName(item) {
     const lowercaseWords = ["of", "the"];
@@ -541,8 +577,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-
-
 
 /* TIBIA MONSTERS */
 client.on('message', async msg => {
