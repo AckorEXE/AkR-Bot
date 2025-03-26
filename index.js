@@ -62,15 +62,16 @@ client.on('message', async (msg) => {
 ├ 💎 !mp <texto>
 ├ 💎 !link
 ├ 💎 !kick <usuario>
-│
+┃
 *🔸 Comandos multimedia:*
 ├ 💎 !sticker, !s <multimedia>
-│
+┃
 *🔸 Comandos para Tibia:*
 ├ 💎 !item <nombre>
 ├ 💎 !monster <nombre>
 ├ 💎 !shared <level>
 ├ 💎 !elfbot
+├ 💎 !client
 └───────────`);
             msg.react('🤖');
             await sentMessage.react('💛');
@@ -98,6 +99,30 @@ client.on('message', async (msg) => {
 https://www.mediafire.com/file/iahkvgwwnopmcxk/ElfBot_NG_4.5.9.rar/file`);
             msg.react('🤖');
             await sentMessage.react('💚');
+        }
+    }
+});
+
+/* CLIENT */
+client.on('message', async (msg) => {
+    if (msg.body === '!client') {
+        const chat = await msg.getChat();
+        const userId = msg.author || msg.from;
+
+        const { allowed, remainingTime } = checkCommandDelay(userId, 'client');
+
+        if (chat.isGroup) {
+            if (!allowed) {
+                const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
+                await sentMessage.react('⏱');
+                msg.react('⏱');
+                return;
+            }
+            msg.react('⏳');
+            const sentMessage = await msg.reply(`*Ingrese a este link para descargar el Ackor Client 8.60.*
+https://www.mediafire.com/file/s6x5cmetrqlieg3/AckorClient_RetroEK10_Jester_V3.rar/file`);
+            msg.react('🤖');
+            await sentMessage.react('🫡');
         }
     }
 });
