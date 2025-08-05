@@ -1,11 +1,15 @@
-const qrcode = require('qrcode-terminal');
+﻿const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { EventEmitter } = require('events');
+EventEmitter.defaultMaxListeners = 15;
 
 const client = new Client({
     authStrategy: new LocalAuth()
 });
+
+client.setMaxListeners(15);
 
 const commandTimestamps = {};
 
@@ -309,14 +313,20 @@ client.on('message', async (msg) => {
 
 /* MASSPOKE OLD */
 client.on('message', async (msg) => {
-    if (msg.body.startsWith('!mp') || (msg.hasQuotedMsg && msg.body.startsWith('!mp'))) {
-        const chat = await msg.getChat();
-        const contacto = await msg.getContact();
-        const userId = msg.author || msg.from;
+    try {
+        if (msg.body.startsWith('!mp') || (msg.hasQuotedMsg && msg.body.startsWith('!mp'))) {
+            const chat = await msg.getChat();
+            const contacto = await msg.getContact();
+            const userId = msg.author || msg.from;
 
-        const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
+            // Verificar si el chat es un grupo antes de continuar
+            if (!chat.isGroup) {
+                msg.reply('Este comando solo se puede usar en chats de grupo.');
+                return;
+            }
+            
+            const { allowed, remainingTime } = checkCommandDelay(userId, 'mp');
 
-        if (chat.isGroup) {
             if (!allowed) {
                 const sentMessage = await msg.reply(`Por favor espera ${remainingTime} segundos antes de usar el comando de nuevo.`);
                 await sentMessage.react('⏱');
@@ -326,7 +336,7 @@ client.on('message', async (msg) => {
 
             msg.react('⏳');
 
-            // Verificar si el bot es administrador
+            // Verificar si el bot es administrador usando chat.participants
             const botId = client.info.wid._serialized;
             const botParticipant = chat.participants.find(participant => participant.id._serialized === botId);
             if (!botParticipant || (!botParticipant.isAdmin && !botParticipant.isSuperAdmin)) {
@@ -343,7 +353,6 @@ client.on('message', async (msg) => {
             if (isAdmin || isOwner) {
                 let text = `💢𝘔𝘈𝘚𝘚 𝘗𝘖𝘒𝘌💢\n🛎 `;
 
-		// Copiar el mensaje citado o usar el texto después de !mp
                 if (msg.hasQuotedMsg) {
                     const quotedMsg = await msg.getQuotedMessage();
                     text += `${quotedMsg.body}\n\n`;
@@ -355,17 +364,19 @@ client.on('message', async (msg) => {
 
                 let mentions = [];
 
-                // Agregar los participantes al mensaje con formato y menciones
                 for (let participant of chat.participants) {
-                    const contact = await client.getContactById(participant.id._serialized);
-                    mentions.push(contact);
-                    text += `\n🔹 @${participant.id.user}`;
+                    // Intenta obtener el contacto. Si falla, omite esta mención.
+                    try {
+                        const contact = await client.getContactById(participant.id._serialized);
+                        mentions.push(contact.id._serialized);
+                        text += `\n⛓️ @${participant.id.user}`;
+                    } catch (e) {
+                        console.error(`Error al obtener contacto para mencionar: ${participant.id._serialized}`, e);
+                    }
                 }
 
-                // Enviar el mensaje con menciones
                 const sentMessage = await chat.sendMessage(text, { mentions });
 
-                // Reacciones
                 msg.react('🤖');
                 await sentMessage.react('❤️');
             } else {
@@ -373,6 +384,13 @@ client.on('message', async (msg) => {
                 msg.react('🤖');
                 await sentMessage.react('❎');
             }
+        }
+    } catch (error) {
+        console.error('Ocurrió un error en el comando !mp:', error);
+        if (msg.isGroup) {
+            msg.reply('Ocurrió un error al ejecutar el comando. Revisa la consola para más detalles.');
+        } else {
+            msg.reply('Ocurrió un error al ejecutar el comando. Revisa la consola para más detalles.');
         }
     }
 });
