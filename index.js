@@ -1,12 +1,41 @@
 ﻿const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { EventEmitter } = require('events');
 EventEmitter.defaultMaxListeners = 15;
 
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const express = require('express');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.json({ status: 'WhatsApp Bot Active', timestamp: new Date() });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding'
+        ]
+    }
 });
 
 client.setMaxListeners(15);
@@ -700,3 +729,4 @@ ${loot_list.join(', ')}`);
 
 // Initialize client
 client.initialize();
+
