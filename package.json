@@ -1,21 +1,21 @@
 {
   "name": "whatsapp-bot",
   "version": "1.0.0",
+  "description": "WhatsApp Bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "echo 'Build complete'"
+    "start": "node index.js"
   },
   "dependencies": {
-    "whatsapp-web.js": "^1.21.0",
-    "qrcode-terminal": "^0.12.0",
-    "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12",
-    "fluent-ffmpeg": "^2.1.2",
-    "ffmpeg-static": "^5.2.0",
-    "express": "^4.18.2"
+    "whatsapp-web.js": "1.19.5",
+    "qrcode-terminal": "0.12.0",
+    "axios": "1.4.0",
+    "cheerio": "1.0.0-rc.12",
+    "fluent-ffmpeg": "2.1.2",
+    "ffmpeg-static": "5.1.0",
+    "express": "4.18.2"
   },
   "engines": {
-    "node": "18"
+    "node": "18.x"
   }
 }
