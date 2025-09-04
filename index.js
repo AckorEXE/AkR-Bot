@@ -1,4 +1,17 @@
-﻿const qrcode = require('qrcode-terminal');
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Keep Railway happy
+app.get('/', (req, res) => {
+    res.json({ status: 'Bot running', time: new Date() });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server on port ${PORT}`);
+});
+
+const qrcode = require('qrcode-terminal');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { EventEmitter } = require('events');
@@ -729,4 +742,5 @@ ${loot_list.join(', ')}`);
 
 // Initialize client
 client.initialize();
+
 
