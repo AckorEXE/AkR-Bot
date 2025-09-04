@@ -2,34 +2,30 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Keep Railway happy
+// Servidor HTTP requerido por Railway
 app.get('/', (req, res) => {
-    res.json({ status: 'Bot running', time: new Date() });
+    res.json({ 
+        status: 'WhatsApp Bot Active', 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime() 
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
+// Configuración original del bot con ajustes para Railway
 const qrcode = require('qrcode-terminal');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { EventEmitter } = require('events');
 EventEmitter.defaultMaxListeners = 15;
-
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const express = require('express');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-    res.json({ status: 'WhatsApp Bot Active', timestamp: new Date() });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -254,7 +250,6 @@ client.on('message', async (msg) => {
         }
     }
 });
-
 
 /* STICKERS CREATOR */
 const { MessageMedia } = require('whatsapp-web.js');
@@ -742,5 +737,3 @@ ${loot_list.join(', ')}`);
 
 // Initialize client
 client.initialize();
-
-
