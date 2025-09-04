@@ -1,21 +1,22 @@
 {
-  "name": "XkR-Bot 3.0",
-  "version": "3.0.0",
-  "description": "Bot de Whatsapp para administrar grupo de Tibia, con funciones muy basicas.",
+  "name": "AkR-Bot",
+  "version": "4.0.0",
+  "description": "Bot de WhatsApp",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "npm install"
   },
-  "author": "Ackor",
-  "license": "ISC",
   "dependencies": {
-    "axios": "^1.4.0",
-    "cheerio": "^1.0.0-rc.12",
-    "ffmpeg-static": "^5.2.0",
-    "init": "^0.1.2",
-    "puppeteer": "^22.9.0",
+    "whatsapp-web.js": "^1.21.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.31.0"
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "fluent-ffmpeg": "^2.1.2",
+    "ffmpeg-static": "^5.2.0",
+    "express": "^4.18.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
