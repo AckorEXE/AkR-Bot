@@ -30,7 +30,8 @@ EventEmitter.defaultMaxListeners = 15;
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 
+                       (process.platform === 'linux' ? 'chromium' : undefined),
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -42,7 +43,8 @@ const client = new Client({
             '--disable-gpu',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding'
+            '--disable-renderer-backgrounding',
+            '--disable-features=VizDisplayCompositor'
         ]
     }
 });
@@ -737,3 +739,4 @@ ${loot_list.join(', ')}`);
 
 // Initialize client
 client.initialize();
+
