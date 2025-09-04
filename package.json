@@ -1,11 +1,10 @@
 {
-  "name": "AkR-Bot",
-  "version": "4.0.0",
-  "description": "Bot de WhatsApp",
+  "name": "whatsapp-bot",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "npm install"
+    "build": "echo 'Build complete'"
   },
   "dependencies": {
     "whatsapp-web.js": "^1.21.0",
@@ -14,9 +13,9 @@
     "cheerio": "^1.0.0-rc.12",
     "fluent-ffmpeg": "^2.1.2",
     "ffmpeg-static": "^5.2.0",
-    "express": "^4.18.0"
+    "express": "^4.18.2"
   },
   "engines": {
-    "node": "18.x"
+    "node": "18"
   }
 }
